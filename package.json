@@ -1,0 +1,17 @@
+{
+  "name": "android-qr-scanner",
+  "app-name": "Scan 2 GSheets",
+  "package-name": "qrscanner",
+  "version": "1.0.0",
+  "icon": "./assets/icon/icon.png",
+  "description": "Basic qr scanner to GSheets for android",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dusbrio",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.14.0"
+  }
+}
