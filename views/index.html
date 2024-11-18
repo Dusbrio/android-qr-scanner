@@ -3,9 +3,126 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
+    <script src="../assets/ipc/androidjs.js"></script>
+
+    <link href="../assets/css/index_style.css" rel="stylesheet" />
     <title></title>
 </head>
 <body>
+    <div class="top_header">
+        <p class="top_header header_text">QR scanner to GSheets</p>
+    </div>
 
+    <div class="body">
+        <div id="viewport">
+            <video id="video" autoplay></video>
+        </div>
+        <div id="form">
+            <form name="form">
+                <label for="camera_sel">Choose camera:</label>
+                <select id="camera_sel" name="cars">
+                    <option value="enviroment">Back Camera</option>
+                    <option value="user">Front Camera</option>
+                </select>
+                <p>
+                    <input class="fields" type="text" name="gsheetid" id="gsheetid" placeholder="Enter Google Sheet ID" />
+                    <button type="button" id="sendurl" onclick="sendURL()">Confirm</button>
+                </p>
+                <p>
+                    <input class="fields" type="text" name="qrcontent" id="qrcontent" placeholder="Scan QR/Bar Code" />
+                </p>
+                <p>
+                    <button type="submit" id="submit" onclick="sendData()">Submit</button>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import QrScanner from "../assets/js/qr-scanner.min.js";
+
+        const video = document.getElementById('video');
+        const videoContainer = document.getElementById('viewport');
+        const camList = document.getElementById('camera_sel');
+        const camHasFlash = document.getElementById('cam-has-flash');
+        const flashToggle = document.getElementById('flash-toggle');
+        const flashState = document.getElementById('flash-state');
+        const camQrResult = document.getElementById('qrcontent');
+
+        function setResult(label, result) {
+            console.log(result.data);
+            label.value = result.data;
+        }
+
+        // ####### Web Cam Scanning #######
+
+        const scanner = new QrScanner(video, result => setResult(camQrResult, result), {
+            onDecodeError: error => {
+                camQrResult.textContent = error;
+                camQrResult.style.color = 'inherit';
+            },
+            highlightScanRegion: true,
+            highlightCodeOutline: true,
+        });
+
+        const updateFlashAvailability = () => {
+            scanner.hasFlash().then(hasFlash => {
+                camHasFlash.textContent = hasFlash;
+                flashToggle.style.display = hasFlash ? 'inline-block' : 'none';
+            });
+        };
+
+        scanner.start().then(() => {
+            updateFlashAvailability();
+            // List cameras after the scanner started to avoid listCamera's stream and the scanner's stream being requested
+            // at the same time which can result in listCamera's unconstrained stream also being offered to the scanner.
+            // Note that we can also start the scanner after listCameras, we just have it this way around in the demo to
+            // start the scanner earlier.
+            QrScanner.listCameras(true).then(cameras => cameras.forEach(camera => {
+                const option = document.createElement('option');
+                option.value = camera.id;
+                option.text = camera.label;
+                camList.add(option);
+            }));
+        });
+
+
+        // for debugging
+        window.scanner = scanner;
+        scanner.setInversionMode(both);
+
+
+        camList.addEventListener('change', event => {
+            scanner.setCamera(event.target.value).then(updateFlashAvailability);
+        });
+
+        flashToggle.addEventListener('click', () => {
+            scanner.toggleFlash().then(() => flashState.textContent = scanner.isFlashOn() ? 'on' : 'off');
+        });
+
+        document.getElementById('start-button').addEventListener('click', () => {
+            scanner.start();
+        });
+
+        document.getElementById('stop-button').addEventListener('click', () => {
+            scanner.stop();
+        });
+    </script>
+
+    <script>
+        function sendURL() {
+            const field = document.getElementById("gsheetid");
+            let gsheet = field.value;
+            field.setAttribute("placeholder", gsheet);
+            field.setAttribute("disabled", "");
+            front.send('sheetsubmited', gsheet);
+        }
+
+        function sendData() {
+            const field = document.getElementById("qrcontent");
+            let content = field.value;
+            front.send('qrsubmited', content);
+        }
+    </script>
 </body>
 </html>

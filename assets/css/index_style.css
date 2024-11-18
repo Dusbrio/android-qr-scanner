@@ -1,0 +1,69 @@
+﻿body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: whitesmoke;
+}
+
+.top_header {
+    background-color: blue;
+    margin: 0px;
+    height: 4vh;
+    line-height: 4vh;
+}
+
+.header_text {
+    color: white;
+    font-size: 3vh;
+}
+
+.body {
+    height: 96vh;
+    width: 100vw;
+    font-size: 15px;
+}
+
+
+#video {
+    border:solid;
+    border-color:darkblue;
+    border-width: 2.5vw;
+    height: 95vw;
+    width: 95vw;
+    object-fit: cover;
+}
+
+#form {
+    height: 34vh;
+}
+
+#gsheetid {
+    width: 60vw;
+    height: 5vh;
+}
+
+#sendurl {
+    width: 20vw;
+    height: 5vh;
+}
+
+#qrcontent {
+    width: 80vw;
+    height: 5vh;
+}
+
+#submit {
+    width: 80vw;
+    height: 5vh;
+    background-color: blue;
+    color: white;
+    font-size: 3vh;
+    border: none;
+    outline: none;
+}
+
+#submit:active {
+        background-color: darkblue;
+}
